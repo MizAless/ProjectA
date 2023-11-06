@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.3069224, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -285,6 +285,32 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1ca0c8b9a436a5f4393f70ebfc4fa5d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isAttack: 0
+  isSpecialAttack: 0
+  isPauseAttack: 0
+  nextAttack: 0
+  nextPauseAttack: 0
+  comboBDuration: 0.8
+  comboDuration: 0.6
+  cuurentComboDuration: 0.6
+  comboCounter: 0
+  isJumping: 0
+  isGrounded: 1
+  rb: {fileID: 0}
+  animator: {fileID: 0}
+  comboTimer: 0
+--- !u!114 &644217449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644217433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 160ce604dca23a04da0208f6f3e11a06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &705507993
