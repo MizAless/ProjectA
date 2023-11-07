@@ -287,20 +287,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ca0c8b9a436a5f4393f70ebfc4fa5d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAttack: 0
-  isSpecialAttack: 0
-  isPauseAttack: 0
-  nextAttack: 0
-  nextPauseAttack: 0
-  comboBDuration: 0.8
-  comboDuration: 0.6
-  cuurentComboDuration: 0.6
-  comboCounter: 0
-  isJumping: 0
-  isGrounded: 1
-  rb: {fileID: 0}
-  animator: {fileID: 0}
-  comboTimer: 0
 --- !u!114 &644217449
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -606,6 +592,7 @@ GameObject:
   - component: {fileID: 2007000748}
   - component: {fileID: 2007000752}
   - component: {fileID: 2007000753}
+  - component: {fileID: 2007000754}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Ground
@@ -735,6 +722,27 @@ MonoBehaviour:
   m_VoxelSize: 0.16666667
   m_BuildHeightMesh: 0
   m_NavMeshData: {fileID: 23800000, guid: 8acb2c4be33867a43865b68e141ba06f, type: 2}
+--- !u!95 &2007000754
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2007000747}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 907297de6d24f1245948a55d480c1031, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2093441060
 GameObject:
   m_ObjectHideFlags: 0

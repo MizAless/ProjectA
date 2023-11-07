@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
         moveVector.x = Input.GetAxis("Horizontal");
         moveVector.z = Input.GetAxis("Vertical");
 
-        animator.SetFloat("speed", Vector3.ClampMagnitude(moveVector, 1).magnitude);
+        //animator.SetFloat("speed", Vector3.ClampMagnitude(moveVector, 1).magnitude);
 
         rb.transform.localPosition += transform.forward * moveVector.z * speed * Time.deltaTime;
         rb.transform.localPosition += transform.right * moveVector.x * speed * Time.deltaTime;

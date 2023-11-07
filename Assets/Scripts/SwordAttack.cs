@@ -13,6 +13,7 @@ public class SwordAttack : MonoBehaviour
     private bool isJumping = false;
     private bool isGrounded = true;
     private Rigidbody rb;
+    private AttackCombo ComboA;
 
 
     private Animator animator;
