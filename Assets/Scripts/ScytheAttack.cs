@@ -1,43 +1,225 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEditor;
+using UnityEngine.Rendering.VirtualTexturing;
+using static UnityEngine.GraphicsBuffer;
+using UnityEngine.UIElements;
+
+public enum AttackType
+{
+    NormalAttack,
+    PauseAttack,
+    SpecialAttack
+}
+public class Attack
+{
+    public float Duration { get; set; }
+    public string BoolName { get; set; }
+    public Attack NextAttack { get; set; }
+    public Attack NextPauseAttack { get; set; }
+    public AttackType Type { get; set; }
+
+    public Attack(float duration, string boolName, AttackType type = AttackType.NormalAttack)
+    {
+        Duration = duration;
+        BoolName = boolName;
+        NextAttack = null;
+        NextPauseAttack = null;
+        Type = type;
+    }
+
+    public Attack(float duration, string boolName, Attack nextAttack, Attack nextPauseAttack, AttackType type = AttackType.NormalAttack)
+    {
+        Duration = duration;
+        BoolName = boolName;
+        NextAttack = nextAttack;
+        NextPauseAttack = nextPauseAttack;
+        Type = type;
+    }
+
+}
+
+public class AttackCombo
+{
+    private static string[] STRNBRS = { "First", "Second", "Third", "Fourth", "Fifth" };
+    public Attack InitialAttack { get; set; }
+    public Attack CurrentAttack { get; set; }
+    public Attack SpecialAttack { get; set; }
+
+    public AttackCombo(List<float> durations, List<float> pauseAttackDuration, int pauseAttackParentIndex)
+    {
+        if (durations.Count == 0)
+        {
+            throw new ArgumentException("The list of durations cannot be empty.");
+        }
+
+        InitialAttack = new Attack(durations[0], "Is" + STRNBRS[0] + "Attack");
+        Attack previousAttack = InitialAttack;
+        if (pauseAttackParentIndex == 0)
+        {
+            InitialAttack.NextPauseAttack = new Attack(pauseAttackDuration[0], "Is" + STRNBRS[0] + "PauseAttack");
+        }
+
+        for (int i = 1; i < durations.Count; i++)
+        {
+            Attack newAttack = new Attack(durations[i], "Is" + STRNBRS[i] + "Attack");
+            previousAttack.NextAttack = newAttack;
+
+            if (i == pauseAttackParentIndex + 1)
+            {
+                Attack nextPauseAttack = new Attack(pauseAttackDuration[0], "Is" + STRNBRS[0] + "PauseAttack");
+                previousAttack.NextPauseAttack = nextPauseAttack;
+                previousAttack = nextPauseAttack;
+                for (int j = 1; j < pauseAttackDuration.Count; j++)
+                {
+                    nextPauseAttack = new Attack(pauseAttackDuration[j], "Is" + STRNBRS[j] + "PauseAttack");
+                    previousAttack.NextAttack = nextPauseAttack;
+                    previousAttack = nextPauseAttack;
+                }
+            }
+
+            previousAttack = newAttack;
+        }
+
+        CurrentAttack = InitialAttack;
+    }
+
+    public AttackCombo(float duration, string boolName, AttackType type)
+    {
+        if (type == AttackType.SpecialAttack)
+        {
+            InitialAttack = new Attack(duration, boolName);
+            CurrentAttack = InitialAttack;
+        }
+    }
+
+    public void AddAttack(Attack attack) 
+    {
+        if (attack.Type == AttackType.SpecialAttack)
+        {
+            SpecialAttack = attack;
+        }
+    }
+
+    public void NextAttack()
+    {
+        if (CurrentAttack.NextAttack == null)
+        {
+            CurrentAttack = InitialAttack;
+        }
+        else if (CurrentAttack != null)
+        {
+            CurrentAttack = CurrentAttack.NextAttack;
+        }
+    }
+
+    public void NextPauseAttack()
+    {
+        if (CurrentAttack != null && CurrentAttack.NextPauseAttack != null)
+        {
+            CurrentAttack = CurrentAttack.NextPauseAttack;
+        }
+    }
+
+    public void NextSpecialAttack()
+    {
+        if (SpecialAttack != null)
+        {
+            CurrentAttack = SpecialAttack;
+        }
+    }
+
+    public void ResetCombo()
+    {
+        CurrentAttack = InitialAttack;
+    }
+
+    public void PrintCombo(Attack initAttack, int i = 0)
+    {
+        Debug.Log(i.ToString() + " " +  initAttack.Duration.ToString());
+        if (initAttack.NextPauseAttack != null)
+        {
+            PrintCombo(initAttack.NextPauseAttack, ++i);
+        }
+        if (initAttack.NextAttack != null)
+        {
+            PrintCombo(initAttack.NextAttack, ++i);
+        }
+        
+    }
+
+    public float GetCurAttack()
+    {
+        return CurrentAttack.Duration;
+    }
+
+    public bool NextIsPauseAttack()
+    {
+        return CurrentAttack.NextPauseAttack != null;
+    }
+    public bool NextIsRegularAttack()
+    {
+        return CurrentAttack.NextAttack != null;
+    }
+
+    public string GetCurBoolName()
+    {
+        return CurrentAttack.BoolName;
+    }
+
+    public AttackType GetCurAttacType()
+    {
+        return CurrentAttack.Type;
+    }
+}
 
 
-//public class AttackCombo
-//{
-//    private List<float> AttackDuration; // Лист времени анимации очередной атаки
-//    private int AttackCount; // Индекс нынешней атаки
-//    private int AttackNumber; // Индекс нынешней атаки
-//    public AttackCombo(List<float> attackDuration)
-//    {
-//        AttackDuration = attackDuration;
-//        AttackCount = AttackDuration.Count;
-//        AttackNumber = 0;
-//    }
 
-//    public void NextAttack()
-//    {
-//        AttackNumber++;
-//    }
+public class AttackComboManager
+{
+    public Animator animator;
+    public List<AttackCombo> AttackComboList = new List<AttackCombo>();
+    public AttackCombo currentAttackCombo;
+    
+    public AttackComboManager(List<AttackCombo> attackComboList)
+    {
+        AttackComboList = attackComboList;
+        currentAttackCombo = attackComboList[0];
+    }
+
+}
 
 
-//}
 
 public class ScytheAttack : MonoBehaviour
 {
     private bool isAttack = false; // Переменная для управления анимацией атаки
     private bool isSpecialAttack = false;
-    private bool isPauseAttack = false;
+    //private bool isPauseAttack = false;
     private bool nextAttack = false;
-    private float comboBDuration = 0.8f;
-    private float comboDuration = 0.6f; // Длительность комбо в секундах
-    private float cuurentComboDuration = 0.6f; // Длительность комбо в секундах
+    private bool nextPauseAttack = false;
+    private bool nextSpecialAttack = false;
+    //private float comboBDuration = 0.8f;
+    //private float comboDuration = 0.6f; // Длительность комбо в секундах
+    //private float cuurentComboDuration = 0.6f; // Длительность комбо в секундах
     private int comboCounter = 0;
-    private bool isJumping = false;
-    private bool isGrounded = true;
+    //private bool isJumping = false;
+    //private bool isGrounded = true;
     private Rigidbody rb;
-    //private AttackCombo ComboA;
+    private AttackCombo ComboA;
+    private Attack SpecialAttack;
+    private AttackComboManager attackComboManager;
+
+    //public float accelerationSpeed = 5f; // Скорость ускорения
+    //public float decelerationSpeed = 10f; // Скорость замедления
+    //private float currentSpeed = 0f; // Текущая скорость
+    //private float progress = 0f; // Прогресс ускорения/замедления (от 0 до 1)
+
+    private Vector3 target;
+    private float speed = 2.0f;
 
 
     private Animator animator;
@@ -47,191 +229,159 @@ public class ScytheAttack : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
-       
-        //float[] inputAttackDuration = { 1.033f, 1.333f, 1.233f };
-        //ComboA = new AttackCombo(new List<float>(inputAttackDuration));
+
+        float[] inputAttackDuration = { 1.033f, 1.333f, 1.233f };
+        float[] pauseAttackDuration = { 1.200f };
+        ComboA = new AttackCombo(new List<float>(inputAttackDuration), new List<float>(pauseAttackDuration), 1);
+        SpecialAttack = new Attack(1.067f, "IsSpecialAttack", AttackType.SpecialAttack);
+        ComboA.AddAttack(SpecialAttack);
 
     }
 
-    private void Update()
+    // Update is called once per frame
+    void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-
             if (!isAttack)
             {
                 StartCombo();
             }
-            else if (comboTimer % comboDuration > 0.5f && comboCounter < 2)
+            else if (isAttack && comboTimer >= ComboA.GetCurAttack() - 0.2f && !nextAttack)
             {
-                if (!nextAttack)
-                {
-                    NextComboPhase();
-                }
+                nextPauseAttack = true;
             }
-            else if (comboTimer > comboDuration * 2 - 0.3 && comboTimer < comboDuration * 2)
+            else if (isAttack && comboTimer >= ComboA.GetCurAttack() - 0.5f)
             {
-                StartPauseAttack();
-            }
-            else if (comboTimer > comboDuration * 2 - 0.6 && comboTimer < comboDuration * 2 - 0.3)
-            {
-                NextComboPhase();
+                nextAttack = true;
             }
 
         }
-
-
-        if (isAttack) // Если атака активна, проверяем длительность комбо
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            if (!isAttack)
+            {
+                StartCombo(AttackType.SpecialAttack);
+            }
+            else
+            {
+                nextSpecialAttack = true;
+            }
+        }
+        if (isAttack)
         {
             comboTimer += Time.deltaTime;
 
-            if (comboTimer % comboDuration < 0.5f)
+            if (comboTimer < ComboA.GetCurAttack() - 0.5f)
             {
                 nextAttack = false;
+                nextPauseAttack = false;
+                nextSpecialAttack = false;
             }
-
-            //if (comboCounter < 2)
+            else if(comboTimer > ComboA.GetCurAttack())
             {
-                if (comboTimer >= cuurentComboDuration)
+                if (ComboA.NextIsPauseAttack() && nextPauseAttack)
                 {
+                    print("NextPauseAttack");
+                    NextPauseAttack();
+                }
+                else if (!ComboA.NextIsPauseAttack() && nextPauseAttack)
+                {
+                    print("NextComboAttack");
+                    NextComboAttack();
+                }
+                else if (nextAttack)
+                {
+                    print("NextComboAttack");
+                    NextComboAttack();
+                }
+                else if (nextSpecialAttack && ComboA.GetCurAttacType() != AttackType.SpecialAttack)
+                {
+                    print("NextSpecialAttack");
+                    NextSpecialAttack();
+                }
+                else
+                {
+                    print("EndCombo");
                     EndCombo();
                 }
             }
-            //else 
-            //{
-            //    if (comboTimer >= comboDuration + comboBDuration)
-            //    {
-            //        EndCombo();
-            //    }
-            //}
-
-
-
         }
-
-        //if (isSpecialAttack) // Если атака активна, проверяем длительность комбо
-        //{
-        //    comboTimer += Time.deltaTime;
-
-        //    if (Math.Abs(comboTimer - 0.1f) < 0.010 && !isJumping)
-        //    {
-        //        rb.AddForce(Vector3.up * 10, ForceMode.Impulse);
-        //        isJumping = true;
-        //    }
-
-        //    if (comboTimer % 1.2f < 0.5f)
-        //    {
-        //        nextAttack = false;
-        //    }
-
-        //    if (comboTimer >= comboDuration)
-        //    {
-        //        EndSpecialAttack();
-        //    }
-
-        //}
-
-        if (isPauseAttack)
+        if (isSpecialAttack)
         {
-            comboTimer += Time.deltaTime;
-
-            if (comboTimer % comboDuration < 0.5f)
+            //transform.Translate(Vector3.forward * 15 * Time.deltaTime);
+            if (comboTimer > ComboA.GetCurAttack() * 0.2 && comboTimer < ComboA.GetCurAttack() * 0.8)
             {
-                nextAttack = false;
+                float step = speed * Time.deltaTime;
+                transform.position = Vector3.Lerp(transform.position, target, step);
             }
-
-            if (comboTimer >= comboBDuration)
+            else
             {
-                EndPauseAttack();
+                float step = speed/3 * Time.deltaTime;
+                transform.position = Vector3.Lerp(transform.position, target, step);
             }
         }
-
-        //if (Input.GetKeyDown(KeyCode.Mouse1))
-        //{
-
-        //    EndCombo();
-        //    Debug.Log(rb);
-        //    isSpecialAttack = true;
-        //    comboTimer = 0f;
-        //    animator.SetBool("IsSpecialAttack", true); // Устанавливаем переменную аниматора в true
-
-        //}
-
-
-
     }
-
-    private void StartCombo()
+    private void StartCombo(AttackType type = AttackType.NormalAttack)
     {
         isAttack = true;
         comboTimer = 0f;
-        animator.SetBool("IsAttack", true); // Устанавливаем переменную аниматора в true
+        if (type == AttackType.SpecialAttack)
+        {
+            isSpecialAttack = true;
+            ComboA.NextSpecialAttack();
+            target = transform.position + transform.forward * 15;
+        }
+        animator.SetBool(ComboA.GetCurBoolName(), true); // Устанавливаем переменную аниматора в true
         comboCounter++;
     }
 
-    private void NextComboPhase()
+    private void NextSpecialAttack()
     {
+        isSpecialAttack = true;
+        comboTimer = 0f;
+        animator.SetBool(ComboA.GetCurBoolName(), false); // Устанавливаем переменную аниматора в false
+        ComboA.NextSpecialAttack();
+        animator.SetBool(ComboA.GetCurBoolName(), true); // Устанавливаем переменную аниматора в true
         comboCounter++;
-        nextAttack = true;
-        cuurentComboDuration += comboDuration;
+        target = transform.position + transform.forward * 10;
+        nextAttack = false;
+        nextSpecialAttack = false;
     }
 
-    private void EndComboPhase()
+    private void NextComboAttack()
     {
-        animator.SetBool("IsAttack", false); // Устанавливаем переменную аниматора в false
+        comboTimer = 0f;
+        animator.SetBool(ComboA.GetCurBoolName(), false); // Устанавливаем переменную аниматора в false
+        ComboA.NextAttack();
+        animator.SetBool(ComboA.GetCurBoolName(), true); // Устанавливаем переменную аниматора в true
+        comboCounter++;
+        nextAttack = false;
     }
+
+    private void NextPauseAttack()
+    {
+        comboTimer = 0f;
+        animator.SetBool(ComboA.GetCurBoolName(), false); // Устанавливаем переменную аниматора в false
+        ComboA.NextPauseAttack();
+        animator.SetBool(ComboA.GetCurBoolName(), true); // Устанавливаем переменную аниматора в true
+        comboCounter++;
+        nextAttack = false;
+        nextPauseAttack = false;
+    }
+
 
     private void EndCombo()
     {
         isAttack = false;
-        animator.SetBool("IsAttack", false);
-        cuurentComboDuration = comboDuration;
-        nextAttack = false;
-        comboCounter = 0;
-    }
-
-    private void EndSpecialAttack()
-    {
-        isSpecialAttack = false;
-        animator.SetBool("IsSpecialAttack", false);
-        cuurentComboDuration = comboDuration;
-        nextAttack = false;
-    }
-
-    private void StartPauseAttack()
-    {
-        EndCombo();
-        Debug.Log("12312123");
-        isPauseAttack = true;
         comboTimer = 0f;
+        animator.SetBool(ComboA.GetCurBoolName(), false); // Устанавливаем переменную аниматора в true
+        comboCounter = 0;
         nextAttack = false;
-        animator.SetBool("IsPauseAttack", true); // Устанавливаем переменную аниматора в true
-    }
-
-    private void EndPauseAttack()
-    {
-        isPauseAttack = false;
-        animator.SetBool("IsPauseAttack", false);
-        cuurentComboDuration = comboDuration;
-        nextAttack = false;
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        // Проверяем, касается ли персонаж земли
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            isJumping = false;
-        }
-    }
-
-    void OnCollisionExit(Collision collision)
-    {
-        // Проверяем, перестал ли персонаж касаться земли
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-        }
+        nextPauseAttack = false;
+        nextSpecialAttack = false;
+        isSpecialAttack = false;
+        ComboA.ResetCombo();
     }
 }
+    

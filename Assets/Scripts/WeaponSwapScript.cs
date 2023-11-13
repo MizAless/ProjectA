@@ -1,4 +1,7 @@
+using UnityEditor;
+using UnityEditor.Animations;
 using UnityEngine;
+using UnityEngine.SearchService;
 
 public class WeaponSwapScript : MonoBehaviour
 {
@@ -10,9 +13,13 @@ public class WeaponSwapScript : MonoBehaviour
 
     // Список доступных оружий
     public GameObject[] weapons;
+    public MonoBehaviour[] comboScripts;
+    public AnimatorController[] animators;
 
     // Текущее оружие
     private GameObject currentWeapon;
+    private MonoBehaviour currentScript;
+    private Animator currentAnimator;
 
     private int weaponIndex = 0;
 
@@ -42,6 +49,9 @@ public class WeaponSwapScript : MonoBehaviour
         if (CheckIfWeaponAttached(RWeaponHolder))
         {
             currentWeapon = RWeaponHolder.transform.GetChild(0).gameObject;
+            currentAnimator = GetComponent<Animator>();
+            currentAnimator.runtimeAnimatorController = animators[weaponIndex]; 
+                //тут поменять аниматор на animators[weaponIndex]
             Destroy(currentWeapon);
             if (CheckIfWeaponAttached(LWeaponHolder))
             {
@@ -55,6 +65,30 @@ public class WeaponSwapScript : MonoBehaviour
         if (weapons[weaponIndex].name == "Katana")
         {
             Instantiate(weapons[weaponIndex], LWeaponHolder.transform);
+            currentScript = GetComponent<ScytheAttack>();
+            currentScript.enabled = false;
+            currentScript = GetComponent<SwordAttack>();
+            currentScript.enabled = false;
+            currentScript = GetComponent<KatanaAttack>();
+            currentScript.enabled = true;
+        }
+        else if (weapons[weaponIndex].name == "Sword")
+        {
+            currentScript = GetComponent<KatanaAttack>();
+            currentScript.enabled = false;
+            currentScript = GetComponent<ScytheAttack>();
+            currentScript.enabled = false;
+            currentScript = GetComponent<SwordAttack>();
+            currentScript.enabled = true;
+        }
+        else if (weapons[weaponIndex].name == "Scythe")
+        {
+            currentScript = GetComponent<KatanaAttack>();
+            currentScript.enabled = false;
+            currentScript = GetComponent<SwordAttack>();
+            currentScript.enabled = false;
+            currentScript = GetComponent<ScytheAttack>();
+            currentScript.enabled = true;
         }
 
         // Создаем новое оружие

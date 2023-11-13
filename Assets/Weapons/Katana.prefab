@@ -99,6 +99,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -3009792035277807266, guid: 20d3d9ef19f3f324db0971fb706a034d, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 20d3d9ef19f3f324db0971fb706a034d, type: 3}
       propertyPath: m_Name
       value: katanachelfbx

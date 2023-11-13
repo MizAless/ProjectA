@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SwordAttack : MonoBehaviour
+public class KatanaAttack : MonoBehaviour
 {
     private bool isAttack = false; // Переменная для управления анимацией атаки
     private bool isSpecialAttack = false;
@@ -21,24 +21,30 @@ public class SwordAttack : MonoBehaviour
     private Attack SpecialAttack;
     private AttackComboManager attackComboManager;
 
+    //public float accelerationSpeed = 5f; // Скорость ускорения
+    //public float decelerationSpeed = 10f; // Скорость замедления
+    //private float currentSpeed = 0f; // Текущая скорость
+    //private float progress = 0f; // Прогресс ускорения/замедления (от 0 до 1)
+
     private Vector3 target;
     private float speed = 2.0f;
+
 
     private Animator animator;
     private float comboTimer = 0f; // Таймер для отслеживания длительности комбо
 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
 
-        float[] inputAttackDuration = { 0.733f, 0.567f, 1.033f };
-        float[] pauseAttackDuration = { 2.167f };
-        ComboA = new AttackCombo(new List<float>(inputAttackDuration), new List<float>(pauseAttackDuration), 1);
-        SpecialAttack = new Attack(1.200f, "IsSpecialAttack", AttackType.SpecialAttack);
-        ComboA.AddAttack(SpecialAttack);
+        float[] inputAttackDuration = { 0.833f };
+        float[] pauseAttackDuration = { 0.933f };
+        ComboA = new AttackCombo(new List<float>(inputAttackDuration), new List<float>(pauseAttackDuration), 0);
+        //SpecialAttack = new Attack(1.067f, "IsSpecialAttack", AttackType.SpecialAttack);
+        //ComboA.AddAttack(SpecialAttack);
+        ComboA.PrintCombo(ComboA.InitialAttack);
+
     }
 
     // Update is called once per frame
@@ -60,17 +66,17 @@ public class SwordAttack : MonoBehaviour
             }
 
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
-        {
-            if (!isAttack)
-            {
-                StartCombo(AttackType.SpecialAttack);
-            }
-            else
-            {
-                nextSpecialAttack = true;
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.Mouse1))
+        //{
+        //    if (!isAttack)
+        //    {
+        //        StartCombo(AttackType.SpecialAttack);
+        //    }
+        //    else
+        //    {
+        //        nextSpecialAttack = true;
+        //    }
+        //}
         if (isAttack)
         {
             comboTimer += Time.deltaTime;
@@ -88,12 +94,12 @@ public class SwordAttack : MonoBehaviour
                     print("NextPauseAttack");
                     NextPauseAttack();
                 }
-                else if (!ComboA.NextIsPauseAttack() && nextPauseAttack)
+                else if (!ComboA.NextIsPauseAttack() && nextPauseAttack && ComboA.GetCurAttacType() != AttackType.NormalAttack)
                 {
                     print("NextComboAttack");
                     NextComboAttack();
                 }
-                else if (nextAttack)
+                else if (nextAttack && ComboA.GetCurAttacType() != AttackType.NormalAttack)
                 {
                     print("NextComboAttack");
                     NextComboAttack();
@@ -110,20 +116,20 @@ public class SwordAttack : MonoBehaviour
                 }
             }
         }
-        if (isSpecialAttack)
-        {
-            //transform.Translate(Vector3.forward * 15 * Time.deltaTime);
-            if (comboTimer > ComboA.GetCurAttack() * 0.2 && comboTimer < ComboA.GetCurAttack() * 0.8)
-            {
-                float step = speed * Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, target, step);
-            }
-            else
-            {
-                float step = speed / 3 * Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, target, step);
-            }
-        }
+        //if (isSpecialAttack)
+        //{
+        //    //transform.Translate(Vector3.forward * 15 * Time.deltaTime);
+        //    if (comboTimer > ComboA.GetCurAttack() * 0.2 && comboTimer < ComboA.GetCurAttack() * 0.8)
+        //    {
+        //        float step = speed * Time.deltaTime;
+        //        transform.position = Vector3.Lerp(transform.position, target, step);
+        //    }
+        //    else
+        //    {
+        //        float step = speed / 3 * Time.deltaTime;
+        //        transform.position = Vector3.Lerp(transform.position, target, step);
+        //    }
+        //}
     }
     private void StartCombo(AttackType type = AttackType.NormalAttack)
     {
