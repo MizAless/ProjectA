@@ -2,8 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class KatanaComboAttack : AttackCombo
+{
+    public List<float> SpecDurations;
+    public KatanaComboAttack(List<float> durations, List<float> pauseAttackDuration, int pauseAttackParentIndex) : base(durations, pauseAttackDuration, pauseAttackParentIndex)
+    {
+    }
+
+    public void AddSpecDuration(float dur)
+    {
+        SpecDurations.Add(dur);
+    }
+
+}
+
 public class KatanaAttack : MonoBehaviour
 {
+    public GameObject specParticles;
+
+
     private bool isAttack = false; // Переменная для управления анимацией атаки
     private bool isSpecialAttack = false;
     //private bool isPauseAttack = false;
@@ -17,7 +34,7 @@ public class KatanaAttack : MonoBehaviour
     //private bool isJumping = false;
     //private bool isGrounded = true;
     private Rigidbody rb;
-    private AttackCombo ComboA;
+    private KatanaComboAttack ComboA;
     private Attack SpecialAttack;
     private AttackComboManager attackComboManager;
 
@@ -40,9 +57,10 @@ public class KatanaAttack : MonoBehaviour
 
         float[] inputAttackDuration = { 0.833f };
         float[] pauseAttackDuration = { 0.933f };
-        ComboA = new AttackCombo(new List<float>(inputAttackDuration), new List<float>(pauseAttackDuration), 0);
+        ComboA = new KatanaComboAttack(new List<float>(inputAttackDuration), new List<float>(pauseAttackDuration), 0);
         //SpecialAttack = new Attack(1.067f, "IsSpecialAttack", AttackType.SpecialAttack);
         //ComboA.AddAttack(SpecialAttack);
+        ComboA.AddSpecDuration(0.633f); // момент в который катана бьет второй раз за анимацию
         ComboA.PrintCombo(ComboA.InitialAttack);
 
     }
@@ -66,17 +84,40 @@ public class KatanaAttack : MonoBehaviour
             }
 
         }
-        //if (Input.GetKeyDown(KeyCode.Mouse1))
-        //{
-        //    if (!isAttack)
-        //    {
-        //        StartCombo(AttackType.SpecialAttack);
-        //    }
-        //    else
-        //    {
-        //        nextSpecialAttack = true;
-        //    }
-        //}
+        if (Input.GetKeyDown(KeyCode.Mouse1))
+        {
+            if (isAttack && Mathf.Abs(comboTimer - 0.633f) < 0.10)
+            {
+                //Instantiate(specParticles,transform.position, Quaternion.identity);
+
+                GameObject rWeaponHolder = GameObject.Find("RWeaponHolder"); // Найдите объект RWeaponHolder по его имени или другим способом
+                if (rWeaponHolder != null)
+                {
+                    GameObject katana = rWeaponHolder.transform.Find("Katana(Clone)").gameObject; // Найдите катану внутри RWeaponHolder
+                    if (katana != null)
+                    {
+                        GameObject specParticlesInstance = Instantiate(specParticles, katana.transform.position, Quaternion.identity);
+                        specParticlesInstance.transform.SetParent(katana.transform);
+
+                        Destroy(specParticlesInstance, 0.5f); // Уничтожить объект specParticles через 0.1 секунды
+
+                        //ParticleSystem particleSystem = specParticlesInstance.GetComponent<ParticleSystem>();
+                        //if (particleSystem != null)
+                        //{
+                        //    particleSystem.Stop(); // Остановить воспроизведение частиц
+
+                        //    float fadeTime = 2f; // Время угасания в секундах
+                        //    float startAlpha = particleSystem.main.startColor.color.a; // Начальная прозрачность частиц
+
+                        //    // Запустить корутину для управления угасанием частиц
+                        //    StartCoroutine(FadeOutParticles(particleSystem, fadeTime, startAlpha));
+
+
+                        //}
+                    }
+                }
+            }
+        }
         if (isAttack)
         {
             comboTimer += Time.deltaTime;
@@ -192,4 +233,24 @@ public class KatanaAttack : MonoBehaviour
         isSpecialAttack = false;
         ComboA.ResetCombo();
     }
+
+    //private IEnumerator FadeOutParticles(ParticleSystem particleSystem, float fadeTime, float startAlpha)
+    //{
+    //    float timer = 0f;
+
+    //    while (timer < fadeTime)
+    //    {
+    //        float alpha = Mathf.Lerp(startAlpha, 0f, timer / fadeTime); // Интерполяция прозрачности от начального значения к 0
+
+    //        var mainModule = particleSystem.main;
+    //        var startColor = mainModule.startColor;
+    //        startColor.color = new Color(startColor.color.r, startColor.color.g, startColor.color.b, alpha); // Установить новую прозрачность
+
+    //        timer += Time.deltaTime;
+    //        yield return null;
+    //    }
+
+    //    Destroy(particleSystem.gameObject); // Уничтожить объект частиц после угасания
+    //}
+
 }
