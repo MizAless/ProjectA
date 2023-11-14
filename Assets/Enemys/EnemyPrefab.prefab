@@ -1710,7 +1710,7 @@ Animator:
   m_GameObject: {fileID: 4015452258391963794}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2e871cd943ba7ca4ba47d26d9a2a3743, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 4baac2dc595765d4fab30b67091fa46c, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1720,6 +1720,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &4583649535026949114
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1732,6 +1733,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf6e080ec73c0f4419c62417db357283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  healtPoints: 100
 --- !u!1 &4114030615378554161
 GameObject:
   m_ObjectHideFlags: 0
