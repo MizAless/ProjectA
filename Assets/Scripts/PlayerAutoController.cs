@@ -90,32 +90,32 @@ public class PlayerAutoController : MonoBehaviour
 
         if (fight)
         {
-            curEnemyHealthPoints = enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints;
+            //curEnemyHealthPoints = enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints;
 
-            if (Input.GetKeyDown(KeyCode.Mouse0))
-            {
-                animator.SetBool("isAttack", true);
-                curEnemyHealthPoints -= 50;
-                Debug.Log("Down");
-                Debug.Log(curEnemyHealthPoints);
-                //enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints = curEnemyHealthPoints;
-            }
+            //if (Input.GetKeyDown(KeyCode.Mouse0))
+            //{
+            //    animator.SetBool("isAttack", true);
+            //    curEnemyHealthPoints -= 50;
+            //    Debug.Log("Down");
+            //    Debug.Log(curEnemyHealthPoints);
+            //    //enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints = curEnemyHealthPoints;
+            //}
 
-            if (Input.GetKeyDown(KeyCode.Mouse1))
-            {
-                animator.SetBool("isAttack", false);
-            }
+            //if (Input.GetKeyDown(KeyCode.Mouse1))
+            //{
+            //    animator.SetBool("isAttack", false);
+            //}
 
-            if (curEnemyHealthPoints <= 0)
-            {
-                fight = false;
-                agent.enabled = true;
-                Destroy(enemies[currentEnemyIndex]);
-                currentEnemyIndex++;
+            //if (curEnemyHealthPoints <= 0)
+            //{
+            //    fight = false;
+            //    agent.enabled = true;
+            //    Destroy(enemies[currentEnemyIndex]);
+            //    currentEnemyIndex++;
 
-                agent.SetDestination(enemies[currentEnemyIndex].transform.position);
+            //    agent.SetDestination(enemies[currentEnemyIndex].transform.position);
 
-            }
+            //}
 
         }
         else if (Vector3.Distance(transform.position, enemies[currentEnemyIndex].transform.position) < 2f)
