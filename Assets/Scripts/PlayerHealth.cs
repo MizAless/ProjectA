@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyScript : MonoBehaviour
+public class PlayerHealth : MonoBehaviour
 {
-    public int healtPoints = 100;
+    public int health;
     // Start is called before the first frame update
     void Start()
     {
@@ -17,12 +17,11 @@ public class EnemyScript : MonoBehaviour
         
     }
 
+
     public void TakeDamage(int damage)
     {
-        healtPoints -= damage;
-        if (healtPoints < 0)
-        {
-            Destroy(gameObject);
-        }
+        health -= damage;
+        print(health);
     }
+
 }

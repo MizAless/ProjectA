@@ -22,6 +22,7 @@ public class WeaponSwapScript : MonoBehaviour
     private Animator currentAnimator;
 
     private int weaponIndex = 0;
+    private bool first = true;
 
     private void Start()
     {
@@ -57,10 +58,14 @@ public class WeaponSwapScript : MonoBehaviour
             {
                 Destroy(LWeaponHolder.transform.GetChild(0).gameObject);
             }
-        } else
+            first = false;
+        } 
+        else
         {
             weaponIndex = 0;
         }
+        currentWeapon = Instantiate(weapons[weaponIndex], RWeaponHolder.transform);
+
 
         if (weapons[weaponIndex].name == "Katana")
         {
@@ -71,6 +76,7 @@ public class WeaponSwapScript : MonoBehaviour
             currentScript.enabled = false;
             currentScript = GetComponent<KatanaAttack>();
             currentScript.enabled = true;
+            if (!first) currentScript.GetComponent<KatanaAttack>().CustomStart();
         }
         else if (weapons[weaponIndex].name == "Sword")
         {
@@ -80,6 +86,7 @@ public class WeaponSwapScript : MonoBehaviour
             currentScript.enabled = false;
             currentScript = GetComponent<SwordAttack>();
             currentScript.enabled = true;
+            if (!first) currentScript.GetComponent<SwordAttack>().CustomStart();
         }
         else if (weapons[weaponIndex].name == "Scythe")
         {
@@ -89,13 +96,13 @@ public class WeaponSwapScript : MonoBehaviour
             currentScript.enabled = false;
             currentScript = GetComponent<ScytheAttack>();
             currentScript.enabled = true;
+            if (!first) currentScript.GetComponent<ScytheAttack>().CustomStart();
         }
 
         // Создаем новое оружие
-        currentWeapon = Instantiate(weapons[weaponIndex], RWeaponHolder.transform);
     }
 
-    private bool CheckIfWeaponAttached(GameObject parentObject)
+    public bool CheckIfWeaponAttached(GameObject parentObject)
     {
         // Перебираем все дочерние объекты
         for (int i = 0; i < parentObject.transform.childCount; i++)

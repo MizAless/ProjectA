@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class SwordAttack : MonoBehaviour
 {
@@ -27,9 +28,11 @@ public class SwordAttack : MonoBehaviour
     private Animator animator;
     private float comboTimer = 0f; // Таймер для отслеживания длительности комбо
 
+    private bool isGrounded = true;
+    private bool isJumping = false;
+    private GameObject Sword;
 
-    // Start is called before the first frame update
-    void Start()
+    public void CustomStart()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
@@ -39,6 +42,17 @@ public class SwordAttack : MonoBehaviour
         ComboA = new AttackCombo(new List<float>(inputAttackDuration), new List<float>(pauseAttackDuration), 1);
         SpecialAttack = new Attack(1.200f, "IsSpecialAttack", AttackType.SpecialAttack);
         ComboA.AddAttack(SpecialAttack);
+
+        var WeaponList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Weapon"));
+        Sword = WeaponList.FirstOrDefault(weapon => weapon.name == "Sword(Clone)");
+        Sword.GetComponent<Collider>().enabled = false;
+        Sword.GetComponent<Collider>().isTrigger = false;
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        CustomStart();
     }
 
     // Update is called once per frame
@@ -60,7 +74,7 @@ public class SwordAttack : MonoBehaviour
             }
 
         }
-        if (Input.GetKeyDown(KeyCode.Mouse1))
+        if (Input.GetKeyDown(KeyCode.Mouse1) && isGrounded)
         {
             if (!isAttack)
             {
@@ -98,7 +112,7 @@ public class SwordAttack : MonoBehaviour
                     print("NextComboAttack");
                     NextComboAttack();
                 }
-                else if (nextSpecialAttack && ComboA.GetCurAttacType() != AttackType.SpecialAttack)
+                else if (nextSpecialAttack && ComboA.GetCurAttackType() != AttackType.SpecialAttack && isGrounded)
                 {
                     print("NextSpecialAttack");
                     NextSpecialAttack();
@@ -113,20 +127,29 @@ public class SwordAttack : MonoBehaviour
         if (isSpecialAttack)
         {
             //transform.Translate(Vector3.forward * 15 * Time.deltaTime);
-            if (comboTimer > ComboA.GetCurAttack() * 0.2 && comboTimer < ComboA.GetCurAttack() * 0.8)
+            //if (comboTimer > ComboA.GetCurAttack() * 0.2 && comboTimer < ComboA.GetCurAttack() * 0.8)
+            //{
+            //    float step = speed * Time.deltaTime;
+            //    transform.position = Vector3.Lerp(transform.position, target, step);
+            //}
+            //else
+            //{
+            //    float step = speed / 3 * Time.deltaTime;
+            //    transform.position = Vector3.Lerp(transform.position, target, step);
+            //}
+
+            if (!isJumping)
             {
-                float step = speed * Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, target, step);
-            }
-            else
-            {
-                float step = speed / 3 * Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, target, step);
+                //rb.AddForce(Vector3.up * 10, ForceMode.Impulse);
+                rb.velocity = new Vector3(rb.velocity.x, 10, rb.velocity.z);
+                isJumping = true;
             }
         }
     }
     private void StartCombo(AttackType type = AttackType.NormalAttack)
     {
+        Sword.GetComponent<Collider>().enabled = true;
+        Sword.GetComponent<Collider>().isTrigger = true;
         isAttack = true;
         comboTimer = 0f;
         if (type == AttackType.SpecialAttack)
@@ -185,5 +208,17 @@ public class SwordAttack : MonoBehaviour
         nextSpecialAttack = false;
         isSpecialAttack = false;
         ComboA.ResetCombo();
+        Sword.GetComponent<Collider>().enabled = false;
+        Sword.GetComponent<Collider>().isTrigger = false;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        // Проверяем, касается ли персонаж земли
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+            isJumping = false;
+        }
     }
 }

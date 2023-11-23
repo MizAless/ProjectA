@@ -7,6 +7,8 @@ using UnityEditor;
 using UnityEngine.Rendering.VirtualTexturing;
 using static UnityEngine.GraphicsBuffer;
 using UnityEngine.UIElements;
+using System.Linq;
+using UnityEngine.SocialPlatforms.Impl;
 
 public enum AttackType
 {
@@ -170,7 +172,7 @@ public class AttackCombo
         return CurrentAttack.BoolName;
     }
 
-    public AttackType GetCurAttacType()
+    public AttackType GetCurAttackType()
     {
         return CurrentAttack.Type;
     }
@@ -225,7 +227,9 @@ public class ScytheAttack : MonoBehaviour
     private Animator animator;
     private float comboTimer = 0f; // Таймер для отслеживания длительности комбо
 
-    private void Start()
+    private GameObject Scythe;
+
+    public void CustomStart()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
@@ -236,6 +240,15 @@ public class ScytheAttack : MonoBehaviour
         SpecialAttack = new Attack(1.067f, "IsSpecialAttack", AttackType.SpecialAttack);
         ComboA.AddAttack(SpecialAttack);
 
+        var WeaponList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Weapon"));
+        Scythe = WeaponList.FirstOrDefault(weapon => weapon.name == "Scythe(Clone)");
+        Scythe.GetComponent<Collider>().enabled = false;
+        Scythe.GetComponent<Collider>().isTrigger = false;
+    }
+
+    private void Start()
+    {
+        CustomStart();
     }
 
     // Update is called once per frame
@@ -295,7 +308,7 @@ public class ScytheAttack : MonoBehaviour
                     print("NextComboAttack");
                     NextComboAttack();
                 }
-                else if (nextSpecialAttack && ComboA.GetCurAttacType() != AttackType.SpecialAttack)
+                else if (nextSpecialAttack && ComboA.GetCurAttackType() != AttackType.SpecialAttack)
                 {
                     print("NextSpecialAttack");
                     NextSpecialAttack();
@@ -324,6 +337,8 @@ public class ScytheAttack : MonoBehaviour
     }
     private void StartCombo(AttackType type = AttackType.NormalAttack)
     {
+        Scythe.GetComponent<Collider>().enabled = true;
+        Scythe.GetComponent<Collider>().isTrigger = true;
         isAttack = true;
         comboTimer = 0f;
         if (type == AttackType.SpecialAttack)
@@ -382,6 +397,8 @@ public class ScytheAttack : MonoBehaviour
         nextSpecialAttack = false;
         isSpecialAttack = false;
         ComboA.ResetCombo();
+        Scythe.GetComponent<Collider>().enabled = false;
+        Scythe.GetComponent<Collider>().isTrigger = false;
     }
 }
     

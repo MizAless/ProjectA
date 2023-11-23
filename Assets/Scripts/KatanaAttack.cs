@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 public class KatanaComboAttack : AttackCombo
 {
-    public List<float> SpecDurations;
+    public List<float> SpecDurations = new List<float>();
     public KatanaComboAttack(List<float> durations, List<float> pauseAttackDuration, int pauseAttackParentIndex) : base(durations, pauseAttackDuration, pauseAttackParentIndex)
     {
     }
@@ -37,6 +39,8 @@ public class KatanaAttack : MonoBehaviour
     private KatanaComboAttack ComboA;
     private Attack SpecialAttack;
     private AttackComboManager attackComboManager;
+    private List<GameObject> Katanas;
+
 
     //public float accelerationSpeed = 5f; // Скорость ускорения
     //public float decelerationSpeed = 10f; // Скорость замедления
@@ -50,7 +54,7 @@ public class KatanaAttack : MonoBehaviour
     private Animator animator;
     private float comboTimer = 0f; // Таймер для отслеживания длительности комбо
 
-    private void Start()
+    public void CustomStart()
     {
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
@@ -62,7 +66,24 @@ public class KatanaAttack : MonoBehaviour
         //ComboA.AddAttack(SpecialAttack);
         ComboA.AddSpecDuration(0.633f); // момент в который катана бьет второй раз за анимацию
         ComboA.PrintCombo(ComboA.InitialAttack);
+        var WeaponList = new List<GameObject>(GameObject.FindGameObjectsWithTag("Weapon"));
+        Katanas = WeaponList.Where(weapon => weapon.name == "Katana(Clone)").ToList();
 
+        foreach (GameObject katana in Katanas)
+        {
+            katana.GetComponent<Collider>().enabled = false;
+            katana.GetComponent<Collider>().isTrigger = false;
+        }
+
+        //foreach (var weapon in WeaponList)
+        //{
+        //    weapon.gameObject.GetComponent<Collider>().enabled = false;
+        //}
+    }
+
+    private void Start()
+    {
+        CustomStart();
     }
 
     // Update is called once per frame
@@ -135,17 +156,17 @@ public class KatanaAttack : MonoBehaviour
                     print("NextPauseAttack");
                     NextPauseAttack();
                 }
-                else if (!ComboA.NextIsPauseAttack() && nextPauseAttack && ComboA.GetCurAttacType() != AttackType.NormalAttack)
+                else if (!ComboA.NextIsPauseAttack() && nextPauseAttack && ComboA.GetCurAttackType() != AttackType.NormalAttack)
                 {
                     print("NextComboAttack");
                     NextComboAttack();
                 }
-                else if (nextAttack && ComboA.GetCurAttacType() != AttackType.NormalAttack)
+                else if (nextAttack && ComboA.GetCurAttackType() != AttackType.NormalAttack)
                 {
                     print("NextComboAttack");
                     NextComboAttack();
                 }
-                else if (nextSpecialAttack && ComboA.GetCurAttacType() != AttackType.SpecialAttack)
+                else if (nextSpecialAttack && ComboA.GetCurAttackType() != AttackType.SpecialAttack)
                 {
                     print("NextSpecialAttack");
                     NextSpecialAttack();
@@ -170,10 +191,15 @@ public class KatanaAttack : MonoBehaviour
         //        float step = speed / 3 * Time.deltaTime;
         //        transform.position = Vector3.Lerp(transform.position, target, step);
         //    }
-        //}
+        //} 
     }
     private void StartCombo(AttackType type = AttackType.NormalAttack)
     {
+        foreach (GameObject katana in Katanas)
+        {
+            katana.GetComponent<Collider>().enabled = true;
+            katana.GetComponent<Collider>().isTrigger = true;
+        }
         isAttack = true;
         comboTimer = 0f;
         if (type == AttackType.SpecialAttack)
@@ -232,6 +258,11 @@ public class KatanaAttack : MonoBehaviour
         nextSpecialAttack = false;
         isSpecialAttack = false;
         ComboA.ResetCombo();
+        foreach (GameObject katana in Katanas)
+        {
+            katana.GetComponent<Collider>().enabled = false;
+            katana.GetComponent<Collider>().isTrigger = false;
+        }
     }
 
     //private IEnumerator FadeOutParticles(ParticleSystem particleSystem, float fadeTime, float startAlpha)

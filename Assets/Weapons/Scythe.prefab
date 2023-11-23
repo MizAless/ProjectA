@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4546608910667906208}
+  - component: {fileID: 6916696319252432482}
+  - component: {fileID: 1021445895239074504}
   m_Layer: 0
   m_Name: Scythe
   m_TagString: Weapon
@@ -32,6 +34,32 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6916696319252432482
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4546608910667906223}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 2.6231632, y: 4.126508, z: 0.5461343}
+  m_Center: {x: 0.44502163, y: -1.1191928, z: 0.103164494}
+--- !u!114 &1021445895239074504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4546608910667906223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d95b1d35737f7134a9b4be62336da237, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damage: 20
 --- !u!1001 &4546608912003109671
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -69,23 +97,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.25254112
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.2378145
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.66591597
+      value: 0.70710677
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.6604719
+      value: -0.70710677
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -271.272
+      value: -270
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -93,7 +121,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 49.422
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: db255206dcdad6f4b94d5f7cc3fea27e, type: 3}
       propertyPath: m_ConstrainProportionsScale

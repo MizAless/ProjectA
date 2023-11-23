@@ -1354,6 +1354,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1852576806548013000}
+  - component: {fileID: 7717927425315100303}
+  - component: {fileID: 2288981604346023520}
   m_Layer: 0
   m_Name: mixamorig:RightHand
   m_TagString: Untagged
@@ -1380,6 +1382,33 @@ Transform:
   m_Father: {fileID: 2563496969622287784}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7717927425315100303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2715566404302941441}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6f0f3abcdac4284abe1e10198566b3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackDamage: 10
+--- !u!136 &2288981604346023520
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2715566404302941441}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.38163814
+  m_Height: 1.2820672
+  m_Direction: 1
+  m_Center: {x: 0.000000004251343, y: 0.11144819, z: -0.007896648}
 --- !u!1 &2844509103419346638
 GameObject:
   m_ObjectHideFlags: 0
@@ -1646,9 +1675,10 @@ GameObject:
   - component: {fileID: -4121363582712038333}
   - component: {fileID: -439014253490716455}
   - component: {fileID: 4583649535026949114}
+  - component: {fileID: 4457090580485204526}
   m_Layer: 0
   m_Name: EnemyPrefab
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1684,7 +1714,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!136 &-4121363582712038333
 CapsuleCollider:
@@ -1734,6 +1764,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healtPoints: 100
+--- !u!114 &4457090580485204526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4015452258391963794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 704f28191c14d4b4dbfffed390e5c527, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Damage: 10
+  projPrefab: {fileID: 2625039811899272508, guid: bad08a2ab0807c9418e7ebba88c72591, type: 3}
 --- !u!1 &4114030615378554161
 GameObject:
   m_ObjectHideFlags: 0

@@ -74,7 +74,7 @@ public class PlayerAutoController : MonoBehaviour
             return;
         }
 
-        if (enemies.Length > 0)
+        if (enemies.Length > 0 && agent.enabled == true)
         {
             var move = agent.SetDestination(enemies[currentEnemyIndex].transform.position);
             if (move)
@@ -98,7 +98,7 @@ public class PlayerAutoController : MonoBehaviour
                 curEnemyHealthPoints -= 50;
                 Debug.Log("Down");
                 Debug.Log(curEnemyHealthPoints);
-                enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints = curEnemyHealthPoints;
+                //enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints = curEnemyHealthPoints;
             }
 
             if (Input.GetKeyDown(KeyCode.Mouse1))
