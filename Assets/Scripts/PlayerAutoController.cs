@@ -29,10 +29,10 @@ public class PlayerAutoController : MonoBehaviour
 
         //agent.SetDestination(this.transform.position);
 
-        
+
 
         // Удаление врага
-        Destroy(enemies[currentEnemyIndex]); 
+        Destroy(enemies[currentEnemyIndex]);
 
         // Переход к следующему врагу
         currentEnemyIndex++;
@@ -74,7 +74,7 @@ public class PlayerAutoController : MonoBehaviour
             return;
         }
 
-        if (enemies.Length > 0 && agent.enabled == true)
+        if (enemies.Length > 0 && !fight)
         {
             var move = agent.SetDestination(enemies[currentEnemyIndex].transform.position);
             if (move)
@@ -90,7 +90,7 @@ public class PlayerAutoController : MonoBehaviour
 
         if (fight)
         {
-            //curEnemyHealthPoints = enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints;
+            curEnemyHealthPoints = enemies[currentEnemyIndex].GetComponent<EnemyScript>().healtPoints;
 
             //if (Input.GetKeyDown(KeyCode.Mouse0))
             //{
@@ -106,16 +106,16 @@ public class PlayerAutoController : MonoBehaviour
             //    animator.SetBool("isAttack", false);
             //}
 
-            //if (curEnemyHealthPoints <= 0)
-            //{
-            //    fight = false;
-            //    agent.enabled = true;
-            //    Destroy(enemies[currentEnemyIndex]);
-            //    currentEnemyIndex++;
+            if (curEnemyHealthPoints <= 0)
+            {
+                fight = false;
+                agent.enabled = true;
+                Destroy(enemies[currentEnemyIndex]);
+                currentEnemyIndex++;
 
-            //    agent.SetDestination(enemies[currentEnemyIndex].transform.position);
+                agent.SetDestination(enemies[currentEnemyIndex].transform.position);
 
-            //}
+            }
 
         }
         else if (Vector3.Distance(transform.position, enemies[currentEnemyIndex].transform.position) < 2f)
@@ -134,7 +134,7 @@ public class PlayerAutoController : MonoBehaviour
             //    StartCoroutine(DelayBeforeDestroy(delayTime));
             //}
 
-            
+
 
 
 
@@ -157,6 +157,10 @@ public class PlayerAutoController : MonoBehaviour
 
 
         }
+        //else
+        //{
+        //    fight = false;
+        //}
 
         // Установка скорости анимации
         //animator.SetFloat("Speed", agent.velocity.magnitude / speed);
